@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
-import asyncio
-import edge_tts
+from gtts import gTTS
+import io
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -16,9 +16,7 @@ class handler(BaseHTTPRequestHandler):
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
             data = json.loads(body)
-            
             text = data.get('text','').strip()
-            voice_name = data.get('voice','Asad')
 
             if not text:
                 self.send_response(400)
@@ -26,21 +24,12 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'No text')
                 return
 
-            voices = {
-                "Asad": "ur-PK-AsadAPMultilingual",
-                "Uzma": "ur-PK-UzmaNeural"
-            }
-            voice_id = voices.get(voice_name, voices["Asad"])
-
-            async def get_audio():
-                com = edge_tts.Communicate(text, voice_id)
-                audio_data = b""
-                async for chunk in com.stream():
-                    if chunk["type"] == "audio":
-                        audio_data += chunk["data"]
-                return audio_data
-
-            audio_bytes = asyncio.run(get_audio())
+            # Urdu voice
+            tts = gTTS(text=text, lang='ur')
+            mp3_fp = io.BytesIO()
+            tts.write_to_fp(mp3_fp)
+            mp3_fp.seek(0)
+            audio_bytes = mp3_fp.read()
 
             self.send_response(200)
             self.send_header('Content-type', 'audio/mpeg')
@@ -52,4 +41,4 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(str(e).encode())
+            self.wfile.write(f"Error: {e}".encode())
