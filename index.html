@@ -1,111 +1,101 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bolta Pakistan - Urdu Text to Speech</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+<title>BoltaPakistan - Pro Voice Studio</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:'Noto Nastaliq Urdu', sans-serif;
-  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:15px;
+body{background:#0e1420;color:white;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:15px}
+.header{display:flex;align-items:center;gap:10px;padding:10px 0 30px}
+.header img{width:40px;height:40px;border-radius:10px;background:white;padding:3px;object-fit:contain}
+.header h2{font-size:18px;display:flex;align-items:center;gap:8px}
+.pro-badge{background:#a3ff12;color:#000;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:800}
+.main{max-width:720px;margin:0 auto}
+.label{font-size:11px;letter-spacing:1.5px;color:#8a94a8;margin-bottom:10px;font-weight:600}
+.script-box{
+  width:100%;background:#121a2b;border:1px solid #7aff6a;
+  border-radius:14px;padding:18px;font-size:16px;color:white;
+  min-height:130px;outline:none;resize:none;
+  box-shadow:0 0 15px rgba(122,255,106,0.15);
 }
-.card{
-  background:white;
-  width:100%;
-  max-width:450px;
-  border-radius:24px;
-  padding:30px 25px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  text-align:center;
-  border-top:5px solid #1b5e20;
+.script-box::placeholder{color:#4a5a73}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{background:#151f32;border-radius:16px;padding:16px;border:1px solid #1e2a42}
+.card-title{font-size:11px;letter-spacing:1px;color:#8a94a8;margin-bottom:12px;font-weight:700}
+select{width:100%;background:#1c2941;border:none;padding:12px;border-radius:10px;color:white;font-size:14px;outline:none}
+.voice-toggle{background:#1c2941;border-radius:10px;display:flex;padding:4px;gap:4px}
+.voice-btn{flex:1;padding:11px;border:none;border-radius:8px;background:transparent;color:#8a94a8;cursor:pointer;font-weight:600}
+.voice-btn.active{background:white;color:#000}
+.generate{
+  margin-top:20px;width:100%;padding:16px;border:none;
+  border-radius:14px;background:linear-gradient(90deg,#c6ffdd,#a3ff12);
+  color:#0a4d2e;font-weight:800;cursor:pointer;font-size:15px;
+  box-shadow:0 0 25px rgba(163,255,18,0.4);transition:0.2s
 }
-.logo{width:110px;margin-bottom:10px;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1))}
-h1{font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:5px;font-family:sans-serif}
-.subtitle{color:#666;font-size:14px;margin-bottom:20px;font-family:sans-serif}
-textarea{
-  width:100%;
-  height:160px;
-  border:2px solid #222;
-  border-radius:12px;
-  padding:15px;
-  font-size:22px;
-  line-height:1.8;
-  resize:none;
-  outline:none;
-  font-family:'Noto Nastaliq Urdu', serif;
-  text-align:right;
-}
-textarea:focus{border-color:#0d6efd}
-.btn{
-  margin-top:20px;
-  background:#0d6efd;
-  color:white;
-  border:none;
-  padding:14px 45px;
-  font-size:20px;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:600;
-  font-family:sans-serif;
-  transition:0.2s;
-  width:100%;
-}
-.btn:hover{background:#0b5ed7;transform:translateY(-1px)}
-.btn:active{transform:translateY(0)}
-#status{margin-top:15px;font-family:sans-serif;font-size:14px;color:#333;min-height:20px}
-audio{width:100%;margin-top:15px;border-radius:10px;display:none}
-.loader{display:none;color:#0d6efd;font-family:sans-serif}
+.generate:hover{transform:translateY(-1px)}
+.generate:disabled{opacity:0.6}
+#status{text-align:center;margin-top:15px;font-size:13px;color:#8a94a8;min-height:20px}
+audio{width:100%;margin-top:15px;display:none}
 </style>
 </head>
 <body>
-<div class="card">
-  <img src="logo.png" class="logo" alt="BP Logo">
-  <h1>Bolta Pakistan</h1>
-  <p class="subtitle">Urdu Text to Speech</p>
-  
-  <textarea id="text" placeholder="یہاں اردو میں لکھیں..."></textarea>
-  
-  <button class="btn" onclick="speak()" id="btn">Bolo</button>
+<div class="header">
+  <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+  <h2>BoltaPakistan <span class="pro-badge">PRO</span></h2>
+</div>
+
+<div class="main">
+  <div class="label">📄 YOUR SCRIPT</div>
+  <textarea id="text" class="script-box" placeholder="Yahan apni kahani likho..."></textarea>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">🎭 EMOTION / LEHJA</div>
+      <select id="emotion">
+        <option>😊 Normal - Saada</option>
+        <option>😢 Jazbati - Emotional</option>
+        <option>😠 Ghusse Wala</option>
+        <option>😂 Hansi Wala</option>
+      </select>
+    </div>
+    <div class="card">
+      <div class="card-title">🎤 VOICE ARTIST</div>
+      <div class="voice-toggle">
+        <button class="voice-btn active" id="btnAsad" onclick="setVoice('Asad')">Asad</button>
+        <button class="voice-btn" id="btnUzma" onclick="setVoice('Uzma')">Uzma</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="generate" id="genBtn" onclick="speak()">▶ GENERATE VOICE</button>
   <div id="status"></div>
-  <div class="loader" id="loader">🔊 آواز بن رہی ہے...</div>
   <audio id="audio" controls></audio>
 </div>
 
 <script>
+let currentVoice="Asad";
+function setVoice(v){
+  currentVoice=v;
+  document.getElementById("btnAsad").classList.toggle("active", v==="Asad");
+  document.getElementById("btnUzma").classList.toggle("active", v==="Uzma");
+}
 async function speak(){
- let t=document.getElementById("text").value.trim();
- if(!t){alert("پہلے کچھ لکھیں!");return;}
- let btn=document.getElementById("btn");
- let status=document.getElementById("status");
- let loader=document.getElementById("loader");
- let audio=document.getElementById("audio");
- 
- btn.disabled=true; btn.innerText="...";
- loader.style.display="block"; status.innerText=""; audio.style.display="none";
- 
- try{
-  let res=await fetch("/api/speak",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({text:t})
-  });
-  if(!res.ok) throw new Error(await res.text());
-  let blob=await res.blob();
-  let url=URL.createObjectURL(blob);
-  audio.src=url; audio.style.display="block"; audio.play();
-  status.innerText="✅ تیار ہے!";
- }catch(e){
-  status.innerText="❌ Error: " + e.message;
- }finally{
-  btn.disabled=false; btn.innerText="Bolo"; loader.style.display="none";
- }
+  let t=document.getElementById("text").value.trim();
+  if(!t){alert("Pehle script likho!");return;}
+  let btn=document.getElementById("genBtn");
+  let status=document.getElementById("status");
+  let audio=document.getElementById("audio");
+  btn.disabled=true; btn.innerText="⏳ GENERATING..."; status.innerText="Bana raha hai..."; audio.style.display="none";
+  try{
+    let res=await fetch("/api/speak",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:t, voice:currentVoice})});
+    if(!res.ok) throw new Error(await res.text());
+    let blob=await res.blob();
+    audio.src=URL.createObjectURL(blob); audio.style.display="block"; audio.play();
+    status.innerText="✅ Voice Ready! - "+currentVoice;
+  }catch(e){status.innerText="❌ "+e.message}
+  finally{btn.disabled=false; btn.innerText="▶ GENERATE VOICE"}
 }
 </script>
 </body>
