@@ -88,14 +88,28 @@ async function speak(){
   let status=document.getElementById("status");
   let audio=document.getElementById("audio");
   btn.disabled=true; btn.innerText="⏳ GENERATING..."; status.innerText="Bana raha hai..."; audio.style.display="none";
+  
   try{
-    let res=await fetch("/api/speak",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:t, voice:currentVoice})});
+    // YAHAN CHANGE KIYA HAI: /api/speak
+    let res=await fetch("/api/speak",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({text:t, voice:currentVoice})
+    });
+    
     if(!res.ok) throw new Error(await res.text());
     let blob=await res.blob();
-    audio.src=URL.createObjectURL(blob); audio.style.display="block"; audio.play();
+    audio.src=URL.createObjectURL(blob); 
+    audio.style.display="block"; 
+    audio.play();
     status.innerText="✅ Voice Ready! - "+currentVoice;
-  }catch(e){status.innerText="❌ "+e.message}
-  finally{btn.disabled=false; btn.innerText="▶ GENERATE VOICE"}
+  }catch(e){
+    status.innerText="❌ Error: "+e.message
+  }
+  finally{
+    btn.disabled=false; 
+    btn.innerText="▶ GENERATE VOICE"
+  }
 }
 </script>
 </body>
