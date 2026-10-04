@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/speak.py": {
-      "runtime": "python3.9"
-    }
-  }
-}
