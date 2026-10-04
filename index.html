@@ -1,43 +1,111 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="ur" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bolta Pakistan</title>
+<title>Bolta Pakistan - Urdu Text to Speech</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body{font-family:sans-serif;text-align:center;padding:20px;background:#f5f5f5}
-.container{max-width:600px;margin:auto;background:white;padding:20px;border-radius:15px;box-shadow:0 0 10px #ccc}
-textarea{width:100%;height:120px;font-size:18px;padding:10px}
-button{padding:12px 25px;font-size:18px;background:#0d6efd;color:white;border:none;border-radius:8px;margin-top:10px;cursor:pointer}
-audio{margin-top:20px;width:100%}
-img{width:80px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Nastaliq Urdu', sans-serif;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:15px;
+}
+.card{
+  background:white;
+  width:100%;
+  max-width:450px;
+  border-radius:24px;
+  padding:30px 25px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  text-align:center;
+  border-top:5px solid #1b5e20;
+}
+.logo{width:110px;margin-bottom:10px;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1))}
+h1{font-size:32px;font-weight:700;color:#1a1a1a;margin-bottom:5px;font-family:sans-serif}
+.subtitle{color:#666;font-size:14px;margin-bottom:20px;font-family:sans-serif}
+textarea{
+  width:100%;
+  height:160px;
+  border:2px solid #222;
+  border-radius:12px;
+  padding:15px;
+  font-size:22px;
+  line-height:1.8;
+  resize:none;
+  outline:none;
+  font-family:'Noto Nastaliq Urdu', serif;
+  text-align:right;
+}
+textarea:focus{border-color:#0d6efd}
+.btn{
+  margin-top:20px;
+  background:#0d6efd;
+  color:white;
+  border:none;
+  padding:14px 45px;
+  font-size:20px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:600;
+  font-family:sans-serif;
+  transition:0.2s;
+  width:100%;
+}
+.btn:hover{background:#0b5ed7;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+#status{margin-top:15px;font-family:sans-serif;font-size:14px;color:#333;min-height:20px}
+audio{width:100%;margin-top:15px;border-radius:10px;display:none}
+.loader{display:none;color:#0d6efd;font-family:sans-serif}
 </style>
 </head>
 <body>
-<div class="container">
-<img src="logo.png">
-<h2>Bolta Pakistan</h2>
-<textarea id="text" placeholder="Yahan Urdu me likhen..."></textarea><br>
-<button onclick="speak()">Bolo</button>
-<audio id="audio" controls style="display:none"></audio>
-<p id="status"></p>
+<div class="card">
+  <img src="logo.png" class="logo" alt="BP Logo">
+  <h1>Bolta Pakistan</h1>
+  <p class="subtitle">Urdu Text to Speech</p>
+  
+  <textarea id="text" placeholder="یہاں اردو میں لکھیں..."></textarea>
+  
+  <button class="btn" onclick="speak()" id="btn">Bolo</button>
+  <div id="status"></div>
+  <div class="loader" id="loader">🔊 آواز بن رہی ہے...</div>
+  <audio id="audio" controls></audio>
 </div>
+
 <script>
 async function speak(){
- let t=document.getElementById("text").value;
- if(!t){alert("Text likhen");return;}
- document.getElementById("status").innerText="Bana raha hai...";
- let res=await fetch("/api/speak",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({text:t})
- });
- if(!res.ok){document.getElementById("status").innerText="Error!";return;}
- let blob=await res.blob();
- let url=URL.createObjectURL(blob);
- let a=document.getElementById("audio");
- a.src=url; a.style.display="block"; a.play();
- document.getElementById("status").innerText="Taiyaar hai!";
+ let t=document.getElementById("text").value.trim();
+ if(!t){alert("پہلے کچھ لکھیں!");return;}
+ let btn=document.getElementById("btn");
+ let status=document.getElementById("status");
+ let loader=document.getElementById("loader");
+ let audio=document.getElementById("audio");
+ 
+ btn.disabled=true; btn.innerText="...";
+ loader.style.display="block"; status.innerText=""; audio.style.display="none";
+ 
+ try{
+  let res=await fetch("/api/speak",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({text:t})
+  });
+  if(!res.ok) throw new Error(await res.text());
+  let blob=await res.blob();
+  let url=URL.createObjectURL(blob);
+  audio.src=url; audio.style.display="block"; audio.play();
+  status.innerText="✅ تیار ہے!";
+ }catch(e){
+  status.innerText="❌ Error: " + e.message;
+ }finally{
+  btn.disabled=false; btn.innerText="Bolo"; loader.style.display="none";
+ }
 }
 </script>
 </body>
