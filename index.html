@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BoltaPakistan PRO</title>
+<style>
+body{margin:0;background:#080808;color:white;font-family:Arial}
+.wrap{display:flex;min-height:100vh;align-items:center;justify-content:center}
+.left-empty{flex:0.5} /* abhi khali rehne do */
+.center{flex:1.2;max-width:600px;padding:20px}
+.right-logo{flex:0.8;display:flex;align-items:center;justify-content:center;padding:20px}
+.right-logo img{width:260px;max-width:100%;border-radius:30px;box-shadow:0 0 60px #00ff8844;background:white;padding:10px}
+
+.card{background:#121212;border:1px solid #222;border-radius:18px;padding:18px;margin-bottom:15px}
+textarea{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:12px;padding:14px;color:white;font-size:16px;outline:none}
+select{width:100%;background:#0a0a0a;color:white;border:1px solid #333;border-radius:12px;padding:12px;margin-top:8px}
+.voice-group{display:flex;background:#0a0a0a;border:1px solid #333;border-radius:12px;padding:4px;margin-top:8px}
+.voice-group button{flex:1;padding:10px;border:none;border-radius:8px;background:transparent;color:#888;font-weight:700;cursor:pointer}
+.voice-group button.active{background:white;color:black}
+.generate{width:100%;background:#00ff88;color:black;border:none;padding:16px;border-radius:12px;font-size:17px;font-weight:800;cursor:pointer}
+.header{text-align:center;margin-bottom:20px}
+.header b{font-size:24px}
+
+@media(max-width:900px){
+  .left-empty{display:none}
+  .right-logo{display:none}
+  .wrap{display:block}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  
+  <!-- LEFT KHALI -->
+  <div class="left-empty"></div>
+
+  <!-- CENTER ME SARA KAAM -->
+  <div class="center">
+    <div class="header">
+      <b>BoltaPakistan <span style="background:#00ff88;color:black;font-size:11px;padding:3px 8px;border-radius:10px">PRO</span></b>
+      <div style="color:#666;font-size:12px;margin-top:5px">Pro Voice Studio v2.0</div>
+    </div>
+
+    <div class="card">
+      <div style="color:#888;font-size:11px">YOUR SCRIPT</div>
+      <textarea id="text" rows="5" placeholder="Yahan apni kahani likho..."></textarea>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;gap:12px">
+        <div style="flex:1">
+          <div style="color:#888;font-size:11px">EMOTION / LEHJA</div>
+          <select id="emotion">
+            <option value="normal">😐 Normal</option>
+            <option value="gussa">😡 Gussa</option>
+            <option value="pyar">❤️ Pyar</option>
+            <option value="pareshani">😰 Pareshani</option>
+            <option value="dar">😱 Dar</option>
+            <option value="khushi">😊 Khushi</option>
+            <option value="hansi">😂 Hansi</option>
+            <option value="rona">😭 Rona</option>
+            <option value="udas">😢 Udaas</option>
+            <option value="adab">🙏 Adab</option>
+            <option value="sargoshi">🤫 Sargoshi</option>
+            <option value="dosti">🤝 Dosti</option>
+          </select>
+        </div>
+        <div style="flex:1">
+          <div style="color:#888;font-size:11px">VOICE</div>
+          <div class="voice-group">
+            <button id="v1" class="active" onclick="setVoice('ur-PK-AsadNeural')">Asad</button>
+            <button id="v2" onclick="setVoice('ur-PK-UzmaNeural')">Uzma</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="generate" id="btn" onclick="generate()">▶ GENERATE VOICE</button>
+    <div id="box" style="display:none;margin-top:15px;background:#1a1a1a;padding:12px;border-radius:12px">
+      <audio id="audio" controls style="width:100%"></audio>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE PE LOGO PNG -->
+  <div class="right-logo">
+    <img src="logo.png" alt="BoltaPakistan Logo">
+  </div>
+
+</div>
+
+<script>
+let voice='ur-PK-AsadNeural';
+function setVoice(v){voice=v; document.getElementById('v1').className=v.includes('Asad')?'active':''; document.getElementById('v2').className=v.includes('Uzma')?'active':''}
+async function generate(){
+ let t=document.getElementById('text').value, emo=document.getElementById('emotion').value;
+ if(!t.trim()) return alert('Script likho');
+ document.getElementById('btn').innerText='⏳ Generating...';
+ let r=await fetch('http://127.0.0.1:8000/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t,voice:voice,emotion:emo})});
+ let d=await r.json(); document.getElementById('box').style.display='block'; document.getElementById('audio').src=d.file_url; document.getElementById('audio').play(); document.getElementById('btn').innerText='▶ GENERATE VOICE';
+}
+</script>
+</body>
+</html>
