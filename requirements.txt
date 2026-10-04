@@ -1,2 +1,2 @@
-edge-tts
-aiohttp
+edge-tts==6.1.10
+aiohttp==3.9.5
